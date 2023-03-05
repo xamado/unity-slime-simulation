@@ -1,0 +1,211 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!181963792 &2655988077585873504
+Preset:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: SlimeSimulation5
+  m_TargetType:
+    m_NativeTypeID: 114
+    m_ManagedTypePPtr: {fileID: 11500000, guid: 9dd9915869bde8044838e72e4e9d3bf9, type: 3}
+    m_ManagedTypeFallback: 
+  m_Properties:
+  - target: {fileID: 0}
+    propertyPath: m_Enabled
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorHideFlags
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorClassIdentifier
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _showDebugLayer
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _matchScreenResolution
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _textureWidth
+    value: 1920
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _textureHeight
+    value: 1080
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _simulationShader
+    value: 
+    objectReference: {fileID: 7200000, guid: 5bbc6e83d7e9daf43aecffe8748bbea2, type: 3}
+  - target: {fileID: 0}
+    propertyPath: _simulationStepsPerFrame
+    value: 10
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _deltaTimeStep
+    value: 0.006
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.size
+    value: 2
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].spawnType
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].spawnRadius
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].numAgents
+    value: 12500
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].color.r
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].color.g
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].color.b
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].color.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].color2.r
+    value: 0.3764706
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].color2.g
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].color2.b
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].color2.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].moveSpeed
+    value: 50
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].steerSpeed
+    value: 188
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].sensorAngle
+    value: 45
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].sensorDistance
+    value: 20
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].sensorSize
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].trailDecayRate
+    value: 0.5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].trailDiffusionRate
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[0].trailWeight
+    value: 8
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].spawnType
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].spawnRadius
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].numAgents
+    value: 12500
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].color.r
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].color.g
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].color.b
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].color.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].color2.r
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].color2.g
+    value: 0.3584807
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].color2.b
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].color2.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].moveSpeed
+    value: 50
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].steerSpeed
+    value: 500
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].sensorAngle
+    value: 60
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].sensorDistance
+    value: 30
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].sensorSize
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].trailDecayRate
+    value: 0.5
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].trailDiffusionRate
+    value: 3
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: _speciesConfig.Array.data[1].trailWeight
+    value: 8
+    objectReference: {fileID: 0}
+  m_ExcludedProperties: []

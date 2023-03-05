@@ -1,0 +1,244 @@
+#pragma kernel Simulation
+#pragma kernel Decay
+#pragma kernel UpdateColorMap
+
+#define MAX_TRAIL_VALUE 1
+
+
+static const float PI = 3.14159265f;
+
+struct Agent
+{
+    float2 position;
+    float angle;
+    int speciesIndex;
+};
+
+struct Species
+{
+    float moveSpeed;
+    float steerSpeed;
+    float sensorAngle;
+    float sensorDistance;
+    float sensorSize;
+    float4 color;
+    float4 color2;
+    float4 mask;
+    float trailDecayRate;
+    float trailDiffusionRate;
+    float trailWeight;
+};
+
+bool ShowDebug;
+
+RWStructuredBuffer<Agent> Agents;
+uint NumAgents;
+
+RWStructuredBuffer<Species> SpeciesBuffer;
+uint NumSpecies;
+
+RWTexture2D<float4> TrailMap;
+RWTexture2D<float4> DebugLayer;
+RWTexture2D<float4> ColorMap;
+
+int ResultWidth;
+int ResultHeight;
+
+float DeltaTime;
+float Time;
+
+uint hash(uint state)
+{
+    state ^= 2747636419u;
+    state *= 2654435769u;
+    state ^= state >> 16;
+    state *= 2654435769u;
+    state ^= state >> 16;
+    state *= 2654435769u;
+    return state;
+}
+
+float scale(uint value)
+{
+    return value / 4294967295.0;
+}
+
+float senseTrail(Agent agent, float angleOffset)
+{
+	const Species species = SpeciesBuffer[agent.speciesIndex];
+
+    const float angleOffsetInRads = angleOffset * (3.1415 / 180);
+    const float sensorAngle = agent.angle + angleOffsetInRads;
+    const float2 sensorDirection = float2(cos(sensorAngle), sin(sensorAngle));
+    const int2 sensorPosition = (int2)(agent.position + sensorDirection * species.sensorDistance);
+
+    float sensedValue = 0;
+    for (int x = -species.sensorSize; x <= species.sensorSize; x++)
+    {
+	    for(int y = -species.sensorSize; y <= species.sensorSize; y++)
+	    {
+		    const float4 TrailValue = TrailMap[sensorPosition + int2(x, y)];
+
+            sensedValue += dot(species.mask * 2 - 1, TrailValue);
+	    }
+    }
+
+    return sensedValue;
+}
+
+void DrawDebugSensor(Agent agent, float angleOffset)
+{
+	const Species species = SpeciesBuffer[agent.speciesIndex];
+
+    const float angleOffsetInRads = angleOffset * (3.1415 / 180);
+    const float sensorAngle = agent.angle + angleOffsetInRads;
+    const float2 sensorDirection = float2(cos(sensorAngle), sin(sensorAngle));
+    const float2 sensorPosition = agent.position + sensorDirection * species.sensorDistance;
+
+    float sensedValue = 0;
+    for (int x = -species.sensorSize; x <= species.sensorSize; x++)
+    {
+        for (int y = -species.sensorSize; y <= species.sensorSize; y++)
+        {
+            DebugLayer[int2(sensorPosition)+int2(x, y)] = float4(1, 1, 0, 1);
+        }
+    }
+}
+
+[numthreads(16,1,1)]
+void Simulation(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= NumAgents)
+        return;
+
+    Agent agent = Agents[id.x];
+    const Species agentSpecies = SpeciesBuffer[agent.speciesIndex];
+
+    const uint random = hash(agent.position.y * ResultWidth + agent.position.x + hash(id.x) + Time * 1000);
+
+    const float2 direction = float2(cos(agent.angle), sin(agent.angle));
+    float2 newPos = agent.position + direction * agentSpecies.moveSpeed * DeltaTime;
+
+    if (newPos.x < 0 || newPos.x >= ResultWidth - 1 || newPos.y < 0 || newPos.y >= ResultHeight - 1)
+    {
+        // Method 1: bounce
+        Agents[id.x].angle = scale(random) * 2 * 3.1415;
+
+        // Method 2: wrap
+        /*if (newPos.x < 0)
+            newPos.x = ResultWidth - 1;
+        else if (newPos.x >= ResultWidth)
+            newPos.x = 0;
+
+        if (newPos.y < 0)
+            newPos.y = ResultHeight - 1;
+        else if (newPos.y >= ResultHeight)
+            newPos.y = 0;
+
+        Agents[id.x].position = newPos;*/
+
+        // Method 3: respawn in center
+        // Agents[id.x].position = float2(ResultWidth * 0.5f, ResultHeight * 0.5f);
+    }
+    else
+    {
+        const float randomSteerStrength = scale(hash(random));
+        const float senseForward = senseTrail(agent, 0);
+        const float senseLeft = senseTrail(agent, -agentSpecies.sensorAngle);
+        const float senseRight = senseTrail(agent, agentSpecies.sensorAngle);
+
+        if (senseForward > senseLeft && senseForward > senseRight)
+        {
+	        // keep true
+        }
+        else if (senseForward < senseLeft && senseForward < senseRight)
+        {
+            // steer randomly
+            Agents[id.x].angle += (randomSteerStrength - 0.5) * 2 * agentSpecies.steerSpeed * DeltaTime;
+        }
+        else if (senseLeft > senseRight)
+        {
+	        // steer left
+            Agents[id.x].angle -= randomSteerStrength * agentSpecies.steerSpeed * DeltaTime;
+        }
+        else if (senseRight > senseLeft)
+        {
+	        // steer right
+            Agents[id.x].angle += randomSteerStrength * agentSpecies.steerSpeed * DeltaTime;
+        }
+
+        Agents[id.x].position = newPos;
+    }
+
+    // Draw debug sensors
+    if (ShowDebug)
+    {
+        DrawDebugSensor(agent, -agentSpecies.sensorAngle);
+        DrawDebugSensor(agent, agentSpecies.sensorAngle);
+        DrawDebugSensor(agent, 0);
+    }
+
+    const float4 prevTrail = TrailMap[int2(newPos.x, newPos.y)];
+    // TrailMap[int2(newPos.x, newPos.y)] = min(1, prevTrail + agentSpecies.mask * agentSpecies.trailWeight * DeltaTime);
+    TrailMap[int2(newPos.x, newPos.y)] = min(MAX_TRAIL_VALUE, prevTrail + agentSpecies.mask * agentSpecies.trailWeight * DeltaTime);
+}
+
+[numthreads(8,8,1)]
+void Decay(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x < 0 || id.x > (uint)ResultWidth || id.y < 0 || id.y > (uint)ResultHeight)
+        return;
+
+    const float4 originalValue = TrailMap.Load(id.xy);
+
+    // blur the map with a 3x3 kernel
+    float4 blurredValue = 0;
+    for(int x = -1; x <= 1; x++)
+    {
+	    for (int y = -1; y <= 1; y++)
+	    {
+            blurredValue += TrailMap[id.xy + int2(x, y)];
+	    }
+    }
+	blurredValue /= 9;
+
+    // Collect diffusion and decay for each species
+    float4 diffusionSpeed = float4(0, 0, 0, 0);
+    float4 decaySpeed = float4(0, 0, 0, 0);
+    for (uint i = 0; i < NumSpecies; ++i)
+    {
+        diffusionSpeed += SpeciesBuffer[i].mask * SpeciesBuffer[i].trailDiffusionRate;
+        decaySpeed += SpeciesBuffer[i].mask * SpeciesBuffer[i].trailDecayRate;
+    }
+    
+    // diffuse over time
+    const float4 weight = saturate(diffusionSpeed * DeltaTime);
+    const float4 diffusedValue = originalValue * (float4(1,1,1,1) - weight) + blurredValue * weight;
+    
+    // decay over time
+    const float4 decayValue = max(0, diffusedValue - decaySpeed * DeltaTime);
+
+    TrailMap[id.xy] = decayValue;
+}
+
+
+[numthreads(8, 8, 1)]
+void UpdateColorMap(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x < 0 || id.x >(uint)ResultWidth || id.y < 0 || id.y >(uint)ResultHeight)
+        return;
+
+    const float4 trailValue = TrailMap.Load(id.xy);
+    
+    float4 Color = float4(0, 0, 0, 0);
+    for (uint i = 0; i < NumSpecies; i++)
+    {
+        const float4 color1 = SpeciesBuffer[i].color;
+        const float4 color2 = SpeciesBuffer[i].color2;
+        Color += lerp(color2, color1, pow(trailValue[i] / MAX_TRAIL_VALUE, 3)) * (trailValue[i] / MAX_TRAIL_VALUE);
+
+        // Color += (trailValue[i] > 0.9f ? color1 : color2) * trailValue[i];
+    }
+
+    ColorMap[id.xy] = Color;
+}
